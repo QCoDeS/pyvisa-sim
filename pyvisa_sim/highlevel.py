@@ -113,7 +113,7 @@ class SimVisaLibrary(highlevel.VisaLibraryBase):
         try:
             parsed = rname.parse_resource_name(resource_name)
         except rname.InvalidResourceName:
-            return 0, constants.StatusCode.error_invalid_resource_name
+            raise Exception("ERROR: invalid resource name")
 
         # Loops through all session types, tries to parse the resource name and if ok, open it.
         cls = sessions.Session.get_session_class(parsed.interface_type_const, parsed.resource_class)
@@ -123,7 +123,7 @@ class SimVisaLibrary(highlevel.VisaLibraryBase):
         try:
             sess.device = self.devices[sess.attrs[constants.VI_ATTR_RSRC_NAME]]
         except KeyError:
-            return 0, constants.StatusCode.error_resource_not_found
+            raise Exception("ERROR: resource %s not found" % resource_name)
 
         return self._register(sess), constants.StatusCode.success
 
